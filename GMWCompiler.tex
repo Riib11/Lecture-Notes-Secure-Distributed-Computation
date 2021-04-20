@@ -1,0 +1,105 @@
+\section{GMW Compiler}
+
+\subsection{GMW I Compiler}
+
+The goal is to compile any protocol with semi-honest security into a protocol with malicious security, where malicious security is security with abort.
+
+The main idea is that parties run the semi-honest protocol $\Pi$, except that after each step each party gives a ZK proof that they correctly following the protocol. We need to ensure that parties use ``good'' randomness, and that parties use the same input/randomness throughout.
+
+\putfigure{Idea for the GMW I compiler}{gmw-compiler-idea}
+
+\subsubsection{Coin-tossing Protocols}
+
+\begin{prcl}[coin-tossing]
+In this protocol, one party learns a uniformly random value, and the other party gets a commitment to that value.
+\putfigure{The coin-tossing protocol}{coin-tossing}
+\end{prcl}
+
+\begin{prcl}[GMW-I-compiled coin-tossing]
+This protocol performs the same functionality as the previous coin-tossing protocol, but now with the GMW-I-compiler's assurance that neither party can behave badly.
+\putfigure{The GMW-I-compiled coin-tossing protocol}{coin-tossing-GMW}
+\end{prcl}
+
+\begin{defn}
+A protocol is \textbf{secure with unanimous abort} when it is secure even when 
+\begin{itemize}
+\item adversarial parties learn their outputs; then abort or continue
+\begin{itemize}
+    \item if continue, then honest parties get output
+    \item if halt, honest parties get $\bot$
+\end{itemize}
+\end{itemize}
+\end{defn}
+
+Security-with-unanimous abort is achievable for $t < n$ given broadcast.
+
+\begin{defn}
+A protocol is \textbf{secure without abort} \textit{or} \textbf{fully secure} when it is secure even when 
+\begin{itemize}
+\item all parties send input ot ideal functionality
+\item all parties get output 
+\end{itemize}
+\end{defn}
+
+Security-with-abort is achievable for $t < n/2$ given broadcast.
+But it is not achievable for $t \geq n/2$ (in general), even given broadcast.
+
+The GMW I compiler, in the multi-party case, compiles a semi-honest protocol $\Pi$ into a protocol that is secure with unanimous abort.
+\begin{enumerate}
+\item each party commits to its input and gives a ZKPoK of its input over broadcast channel 
+\item run a multi-party version of coin-tossing
+\item run the semi-honest protocol and ZK proof of consistency at every step
+\end{enumerate}
+
+\subsection{GMW II Compiler}
+
+\begin{prcl}
+Given a semi-honest protocol $\Pi$, the GMW II compiler yields the following protocol:
+\begin{enumerate}
+\item
+Parties compute $\mathcal{F}_{VSS}$ using a secure-with-abort protocol, once per party. If some $P_i$ misbehaves, kick then out and use a default input in their input's place.
+\item 
+Parties do the same for a random version of $\mathcal{F}_{VSS}$, once per party. If some $P_i$ misbehaves, kick them out.
+\item 
+Run $\Pi$ using the committed inputs and randomness, giving a ZK proof of correctness after each message. If some $P_i$ fails when giving some ZK proof:
+\begin{enumerate}
+    \item each party broadcasts their share of $P_i$'s input/randomness, plus the corresponding $\rho$s
+    \item parties reconstruct $P_i$'s input/randomness from $t+1$ correct shares
+    \item parties run $\Pi$ on behalf of $P_i$ from then on
+\end{enumerate}
+\end{enumerate}
+\putfigure{The GMW II compiler}{gmw-ii-compiler}
+\end{prcl}
+
+\subsubsection{Broadcast}
+
+Parties can realize a broadcast channel using a broadcast protocl.
+
+\begin{defn}
+A \textbf{broadcast protocol} is a protocol run by parties $P_1, \dots  P_n$ with designated $P^* \in \set{P_1, \dots, P_n}$ acting as a sender with initial input $m$, and must have two properties:
+\begin{itemize}
+\item \textbf{Validity.} if $P^*$ is honest, then all honest parties output $m$
+\item \textbf{Consistency.} all honest parties should output the same value
+\end{itemize}
+\putfigure{Idea of broadcast protocol}{broadcast-idea}
+\end{defn}
+
+\begin{defn}
+A \textbf{Byzantine agreement protocol} (BA) is run by parties $P_1, \dots, P_n$ where each $P_i$ has initial input $m_i$, and must have two properties:
+\begin{itemize}
+\item \textbf{Consistency.} all honest parties output the same value 
+\item \textbf{Validity.} if all honest parties hold the same input value $m$, then all honest parties output $m$
+\end{itemize}
+\end{defn}
+
+For $t < n/2$, BA $\implies$ broadcast, and broadcast $\implies$ BA.
+Additionally, BA only makes sense for $t < n/2$, whereas broadcast makes sense even for $n/2 \leq t < n$.
+
+\begin{lem}
+With no prior setup, BA/broadcast are impossible if $t \geq n/3$.
+\end{lem}
+\begin{proof}
+\putfigure{Impossibility of BA/broadcast when $t \geq n/3$}{ba-broadcast-impossible}
+\end{proof}
+
+TODO: lecture 14 has rest of BA/broadcast stuff

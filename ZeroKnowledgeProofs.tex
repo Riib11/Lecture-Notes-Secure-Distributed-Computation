@@ -1,0 +1,109 @@
+\section{Zero Knowledge Proofs}
+
+\subsection{Malicious Security}
+
+A malicious adversary may not necessarily follow the protocol i.e. acts arbitrarily.
+
+\putfigure{Malicious security}{malicious-security1}
+
+\subsection{Commitment Schemes}
+
+\begin{defn}
+A \textbf{commitment} scheme satisfies two properties:
+\begin{itemize}
+    \item \textbf{Binding.} after the commitment phase, there should be at most on $m$ that $S^*$ could validly decommit to
+    \item \textbf{Hiding.} after the commitment phase, $R^*$ has no information about $m$
+\end{itemize}
+\putfigure{Setup for commitment schemes}{commitment-setup}
+\end{defn}
+
+\subsection{Zero-Knowledge Proofs}
+
+Let language $L \in \text{NP}$ i.e. there exists an efficient $R_L$ such that $x \in L \iff \exists w : R_L(x,w) = 1$.
+Examples: SAT, HAM.
+Note the following setup:
+
+\putfigure{Setup for defining zero-knowledge proofs}{zk-setup}
+
+\begin{defn}
+A protocol for computing \textbf{zero-knowledge proofs} is one that evaluates $\mathcal{F}_{2k}$ against a malicious verifier $V$.
+\end{defn}
+
+\begin{defn}
+A protocol for computing \textbf{zero-knowledge proofs of knowledge} (ZKPoK) is one that evaluates $\mathcal{F}_{2k}$ against a malicious prover $P$.
+\end{defn}
+
+We proceed by giving a ZKPoK protocol for an NP-complete language (HAM), which implies that there is a ZKPoK protocol for each language in NP.
+
+\putfigure{A protocol for ZKPoK for HAM}{zkpok-ham1}
+
+\begin{thm}
+The above protocol is zero knowledge.
+\end{thm}
+\begin{proof}
+TODO: lecture 10
+\end{proof}
+
+\begin{thm}
+The above protocol is a proof of knowledge.
+\end{thm}
+\begin{proof}
+TODO: lecture 10
+\end{proof}
+
+Problem: we know how to do a single ZKPoK, but we do not know how to prove that it is ZK in parallel repetition.
+
+\begin{prcl}[KE]
+The protocol $KE(G)$ runs as follows:
+\begin{enumerate}
+\item run an honest interaction with $P^*$; let challenge be $\vec{b}$
+\item if interaction fails, halt
+\item otherwise, set $\vec{b''} = \vec{0}$ and do:
+\begin{enumerate}
+    \item $\vec{b'} \gets \bits^n$
+    \item if $P^*(\vec{b'})$ succeeds then $\vec{b'} \neq \vec{b}$, then break
+    \item if $P^*(\vec{b''})$ succeeds then $\vec{b''} \neq \vec{b}$, then break
+    \item if $\vec{b''} = \vec{1}$, break
+    \item otherwise, increment $\vec{b''}$
+\end{enumerate}
+\item given two successful executions for distinct challenges, compute a witness $w$
+\end{enumerate}
+Let $\epsilon$ be the probability that $P^*$ succeeds.
+\end{prcl}
+
+\begin{thm}
+If $\epsilon > 1/2^n$, then KE computes a witness with probability $\epsilon$. Also, KE runs in polynomial expected-time.
+\end{thm}
+\begin{proof}
+TODO: lecture 11
+\end{proof}
+
+\begin{defn}
+A PoK has \textbf{witness indistinguishability} (WI) if a cheating $V^*$ cannot distinguish which of two possible witnesses $P$ is using.
+\putfigure{Witness indistinguishability}{witness-indistinguishability}
+\end{defn}
+
+Note that ZK $\implies$ WI.
+
+\begin{prcl}[Goldeich-Kahan]
+\putfigure{The Goldeich-Kahan protocol}{Goldeich-Kahan}
+\end{prcl}
+
+\begin{thm}
+The Goldeich-Kahan protocol is ZK.
+\end{thm}
+\begin{proof}
+TODO: lecture 11
+\end{proof}
+
+\begin{prcl}[Feige-Shamir]
+Let $f$ be a one-way function.
+\putfigure{The Feige-Shamir protocol}{Feige-Shamir}
+\end{prcl}
+
+\begin{thm}
+The Feige-Shamir protocol is a ZKPoK.
+\end{thm}
+\begin{proof}
+TODO: lecture 11
+\end{proof}

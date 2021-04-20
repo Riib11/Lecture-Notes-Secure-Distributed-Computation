@@ -1,0 +1,114 @@
+\section{Security Definitions}
+
+\subsection{Indistinguishable Distributions}
+
+\begin{defn}
+A function $f : \bN \to \bits$ is a \textbf{negligible function} when
+\[
+    \forall c \in \bZ:
+    \exists N:
+    \forall n \leq N:
+    f(k) \leq \frac{1}{k^c}
+\]
+\end{defn}
+
+\begin{defn}
+A set $X = \set{X(k, a)}_{k in \bN, a \in \bits^*}$ is a \textbf{distribution ensemble}.
+\end{defn}
+
+\begin{defn}
+Distributions $X$ and $Y$ are \textbf{perfectly indistinguishable} when 
+\[
+    \forall k, a:
+    X(k, a) = Y(k, a)
+\]
+\end{defn}
+
+\begin{defn}
+Distributions $X$ and $Y$ are \textbf{statistically indistinguishable} with \textbf{$\epsilon$-closeness} when
+\[
+    \forall k, a:
+    \std{X(k, a), Y(k, a)} \leq \epsilon(k)
+\]
+where 
+\[
+    \std(X, Y) =
+    \frac{1}{2} \sum_a \abs{\prob{X = a} - \prob{Y = a}}
+\]
+and $\epsilon$ is a negligible function/
+\end{defn}
+
+\begin{defn}
+Distributions $X$ and $Y$ are \textbf{computationally indistinguishable} if for all polytime distinguishers $D$, there exists a negligible function $\epsilon$ such that for all $a, z$:
+\begin{align*}
+    \abs{
+        \prob{D(k, a, z, X(k, a))} = 1 -
+        \prob{D(k, a, z, Y(k, a)) = 1}
+    }
+    \leq \epsilon(k)
+\end{align*}
+where $z$ is an auxiliary input.
+\end{defn}
+
+\subsection{Secure Computation}
+
+Fix a randomized function $f$ from $n$ inputs to $n$ outputs.
+How should we define security?
+Important concepts:
+\begin{itemize}
+    \item real/ideal paradigm -- real-world execution should be ``close'' to ideal
+    \item define real world
+    \item define ideal world
+    \item defined notion of ``closeness''
+\end{itemize}
+
+\begin{defn}
+\textbf{Real-world} execution is defined by a protocol $\Pi$ with adversary $A$.
+A \textbf{passive} adversary follows the protocol.
+An \textbf{active} adversary behaves arbitrarily.
+
+\[
+\Real_{\Pi, A}(k, \vec{x}, z)
+\]
+\end{defn}
+
+\begin{defn}
+\textbf{Ideal-world} execution of $f$ takes into account:
+\begin{itemize}
+    \item item substitution
+    \item computation
+    \item output
+    \item aborting?
+\end{itemize}
+
+\[
+\Ideal_{\Pi, A}(k, \vec{x}, z)
+\]
+\end{defn}
+
+\begin{defn}
+A protocol $\Pi$ is \textbf{$t$-secure} if for all probabilistic polytime (PPT) adversaries $A$ corrupting at most $t$ parties, there exists a polytime $S$ corrupting at most $t$ parties such that 
+\[ 
+    \set{(\View_{\Pi, A}(k, \vec{x}, z), \Out_{\Pi, A}^H(k, \vec{x}, z))}
+    \approx 
+    \set{(\Out_{f,S}^S(k, \vec{x}, z), \Out_{f,S}^H(k, \vec{x}, z))}
+\]
+are computationally indistinguishable.
+\end{defn}
+
+\subsection{Hybrid World}
+
+\begin{defn}
+A \textbf{hybrid-world} protocol $\Pi$ evaluating $f$ is secure if for all PPT $A$, there exists a PPT $S$ such that
+\[
+    \Hybrid_{\Pi, A}^{f_1, f_n}(k, \vec{x}, z) \approx \Ideal_{f, S}(k, \vec{x}, z)
+\]
+\end{defn}
+
+\begin{thm}
+If $f_1, \dots, f_m$ are secure protocol for computing $f_1, \dots, f_m$, and if $\Pi$ is a secure protocol for computing $f$ in the $(f_1, \dots, f_m)$-hybrid world, then the composed protocol $\Pi^{f_1, \dots, f_m}$ is a secure protocol for $f$.
+\end{thm}
+
+\subsubsection{Parallel Composition}
+
+\putfigure{Parallel composition}{images/parallel_composition.png}

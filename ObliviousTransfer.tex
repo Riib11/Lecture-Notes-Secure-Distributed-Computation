@@ -1,0 +1,50 @@
+
+
+\section{Oblivious Transfer}
+
+\subsection{$1$-out-of-$N$ Oblivious Transfer (\OT)}
+
+Denote 1$-out-of-$N$ \OT$ by $\OT_1^N$.
+
+\putfigure{Schematic for $\OT_1^N$}{images/1-out-of-N-OT.png}
+
+\begin{prcl}
+\textbf{Semi-honest $OT_1^N$}.
+Let $(\Gen, \Enc, \Dec)$ be a CPA-secure public-key encryption scheme.
+Then the following protocol computes semi-honest $\OT_1^N$.
+\putfigure{Instance of $\OT_1^N$ with CPA-secure public-key encryption scheme}{images/1N-OT-CPA.png}
+\end{prcl}
+
+\begin{thm} \label{thm:1N-OT-CPA}
+The above protocol securely computes $\OT_1^N$ in the semi-honest model, given some assumptions specified in the proof
+\end{thm}
+\begin{proof}
+Suppose that $P_1$ is corrupted. 
+Then the only adversary $S_1$ to consider has the exact view as real $P_1$.
+
+Suppose that $P_2$ is corrupted.
+Then construct the following adversary $S_2$:
+\putfigure{Party 2 corruption case for security proof of theorem~\ref{thm:1N-OT-CPA}}{images/1N-OT-CPA-S2.png}
+Then need to prove that $\forall x_1, \dots, x_N, i$, the real and ideal cases are computationally indistinguishable:
+\begin{align*}
+    &\set{(r_{i^*}, r_{i \neq i^*}, \Enc_{pk_{i^*}}(x_{i^*}), \Enc_{pk_{i \neq i^*}}(x_{i \neq i^*}))}
+    \tag{real}
+    \\
+    \approx 
+    &\set{(r_{i^*}, r_{i \neq i^*}, \Enc_{pk_{i^*}}(x_{i^*}), \Enc_{pk_{i \neq i^*}}(\vec{0}))}
+    \tag{ideal}
+\end{align*}
+Can prove this by assuming a distinguisher $D$ and showing that $D$ contradicts the $CPA$ security premise.
+
+Additionally need assumption on $\mathsf{SampRand}$, \textbf{oblivious key sampling}:
+\[
+    (r, \mathsf{SampKey}(1^k; r)) \approx 
+    (\mathsf{SampRand}(r); r \gets \Gen(1^k))
+\]
+
+Altogether, prove in two steps and use transitivity of computational indistinguishability:
+\[
+    \Ideal \approx \Hybrid \approx \Real 
+\]
+\end{proof}
+

@@ -1,0 +1,141 @@
+\section{The GMW protocol for MPC}
+
+The GMW protocol $(n-1)$-securely computes an $n$-input functionality $F$, for semihonest adversaries, assuming semi-honest \OT.
+\begin{itemize}
+    \item works in \OT-hybrid world; is perfectly secure in \OT-hybrid model.
+    \item sufficient to consider deterministic functions, since probabilistic functionalities can be reduced to deterministic functions:
+    \[
+        f((x_1, r_1), \dots, (x_n, r_n)) := g(x_1, \dots, x_n; r_1 \xor \cdots \xor r_n)
+    \]
+    \item will consider $2$-party case fist, then expand to $n$-party case
+    \item can represent $f$ as a boolean circuit
+\end{itemize}
+
+\begin{defn}
+A \textbf{secret sharing} of a value $x$ is the choosing of $x_1, \dots, x_N$ such that $x = x_1 \xor \cdots x_n$ and then the sending of $x_1, \dots, x_{N-1}$ to $N-1$ other parties. The $x_N$ is kept for the original sharer, so that if an adversary controls all other parties (such as in the 2-party case), there are still 2 unknowns in the equation $x = x_1 \xor \cdots x_n$ and so it cannot be solved.
+\end{defn}
+
+\begin{prcl}
+The \textbf{GMW} protocol works by taking a functionality $F$, represented by a boolean circuit, and converting each of its logic gates (either AND, OR, or NOT) into secure multi-party computations. These MPCs use a secret sharing of inputs, where each party starts the protocol off by creating a secret sharing of their inputs with each other party. During the MPC of the functionality, only the AND gate case and the end output requires communication between parties, where \OT is invoked. 
+
+\putfigure{GMW NOT gate}{images/GMW-2P-not.png}
+\putfigure{GMW OR gate}{images/GMW-2P-or.png}
+\putfigure{GMW AND gate}{images/GMW-2P-and.png}
+
+\paragraph{Output reconstruction.} At the end of computation, each party sends their share of output $i$ to each party that should learn output $i$.
+\end{prcl}
+
+\subsection{Extending BGW}
+
+\paragraph{Semi-honest setting.}
+BGW has perfect security that tolerates $t < n/2$ corrupt parties.
+This is optimal since it is impossible to maintain perfect security for $t \geq n/2$.
+
+\paragraph{Malicious setting.}
+Without a broadcast channel and no prior setup, an extension of BGW can achieve perfect security for $t < n/3$. 
+This is also optimal.
+
+\subsection{Garbled Circuits}
+
+\begin{defn}
+A (Yao's) \textbf{garbled circuit} can be views as an ``encrypted'' version of a boolean circuit for some function $f$.
+One party acts as a garbled-circuit generator, and 
+another party acts as an evaluator of garbled circuits to get the desired result.
+The garbler associates each wire of the circuit with two cryptographic keys, and ensures that the evaluator learns only one key per wire -- in particular, the ``correct'' key i.e. the key that yields the correct output given the garbler's knowledge of the input wire keys.
+\end{defn}
+
+For example, suppose the garbler wants to garble an AND gate. Then the garbler chooses keys $a_0, a_1, b_0, b_1, c_0, c_1$, then creates a gate such that if the evaluator only knows keys $a_x$ and $b_y$ then they can only learn key $c_{x \and y}$, which is the key they need to propogate their evaluated result to the next garbled gate.
+
+\begin{prcl}
+A \textbf{garbling scheme} for a binary $n$-bit-input circuit $C(x,y) = z$ consists of a pair of functions $(\Garble, \Eval)$, where
+\begin{align*}
+    (
+        \set{X_i^0, X_i^1}^n_{i=1},
+        \set{Y_i^0, Y_i^1}^n_{i=1},
+        GC,
+        \set{Z_i^0, Z_i^1}^n_{i=1}
+    )
+    &\gets
+    \Garble(C)
+    \\
+    \set{Z_i}^n_{i=1}
+    &\gets 
+    \Eval(\set{X_i^{x_i}}, \set{Y_i^{y_i}}, GC)
+\end{align*}
+
+\paragraph{Correctness.}
+A garbling scheme is correct when 
+\[
+    \forall x,y,z:
+    z = C(x,y) \implies 
+    \forall i: Z_i = Z_i^{z_i}
+\]
+
+\paragraph{Security.}
+A garbling scheme is secure when there exists a simulator $S$ such that
+\[
+    (
+        \set{x_i^0, x_i^1}^n_{i=1},
+        \set{y_i^0, y_i^1}^n_{i=1},
+        GC,
+        \set{z_i^0, z_i^1}^n_{i=1}
+    )
+    \approx 
+    \set{S(y,C(x,y))}_{x,y}
+\]
+where
+\[
+    \set{
+    (
+        \set{x_i^0, x_i^1}^n_{i=1},
+        \set{y_i^0, y_i^1}^n_{i=1},
+        GC,
+        \set{z_i^0, z_i^1}^n_{i=1}
+    )
+    \gets 
+    \Garble(C) : \set{x_i^{x_i}}, \set{y_i^{y_i}}, GC, \set{(z_i^0, z_i^1)}
+    }_{x,y}
+\]
+\end{prcl}
+
+
+\begin{expl}
+Garbling can be achieved using OT.
+\putfigure{Garbling demonstration using OT}{garble1}
+\end{expl}
+
+\begin{expl}
+Garbling can be achieved using a public-key encryption scheme.
+\putfigure{Garbling demonstration using public-key encryption scheme.}{garble2}
+Assume that $\Dec_k(\Enc_{k'}(m)) = \bot$ if $k \neq k'$.
+Given $A \in \set{A^0, A^1}$ and $B \in \set{B^0, B^1}$, the evaluator can compare (the correct) $C \in \set{C^0, C^1}$.
+\end{expl}
+
+\subsection{Point-and-Permute}
+
+Rather than associating keys with $0$ or $1$ directly, instead associate a label with each pair of keys. The label is chosen by the garbler and only provided to the evaluator for wires it is supposed to learn.
+
+\putfigure{The idea of point-and-permute}{point-and-permute-1}
+
+\noindent \textbf{Benefits:}
+\begin{itemize}
+    \item no need to randomly permute
+    \item evaluator knows which row to decrypt based on labels, which reduced the number of total decryptions by evaluator
+    \item no longer need redundancy in encryption scheme, because
+    \begin{itemize}
+        \item cyphertexts can be shorter
+        \item the $i$th garbled gate can be computed as 
+        \[
+            F_{A^0}(00|i) \xor F_{B^0}(00|i) \xor [c^{(\lambda_a \land \lambda_b) \xor \lambda_c}, (\lambda_a \land \lambda_b) \xor \lambda_c], ~\text{etc.}
+        \]
+    \end{itemize}
+\end{itemize}
+
+\subsection{Garbled Row Reduction}
+
+The following are ways to reduce the number of garbled gates and rows:
+\begin{itemize}
+    \item \textbf{half-gates}: reduce cyphertexts per garbled gate to $2$
+    \item \textbf{free XOR}: avoid garbling XOR gates at all
+    \item \textbf{global shift $\Delta$}: TODO
+\end{itemize}

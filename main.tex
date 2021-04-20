@@ -1,14 +1,93 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathabx}
+\usepackage{mathtools}
+\usepackage{nicefrac}
+\usepackage{enumitem}
+\usepackage{graphicx} \graphicspath{ {images/} }
+\usepackage{xspace}
+\usepackage{environ}
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
+\newtheorem{lem}{Lemma}
+\newtheorem{expl}{Example}
+\newtheorem{thm}{Theorem}
+\newtheorem{prcl}{Protocol}
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\bits}{\mathbb{B}}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\std}{\sigma}
+\newcommand{\prob}[1]{\mathsf{Pr}\left[#1\right]}
+\newcommand{\Ideal}{\mathsf{Ideal}}
+\newcommand{\Real}{\mathsf{Real}}
+\newcommand{\View}{\mathsf{View}}
+\newcommand{\Out}{\mathsf{Out}}
+\newcommand{\Hybrid}{\mathsf{Hybrid}}
+\newcommand{\OT}{\ensuremath{\mathsf{OT}}}
+\newcommand{\Gen}{\ensuremath{\mathsf{Gen}}}
+\newcommand{\Enc}{\ensuremath{\mathsf{Enc}}}
+\newcommand{\Dec}{\ensuremath{\mathsf{Dec}}}
+\newcommand{\xor}{\oplus}
+\newcommand{\Garble}{\textsf{Garble}}
+\newcommand{\Eval}{\textsf{Eval}}
+\newcommand{\putfigure}[2]{
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.8\textwidth]{#2}
+        \caption{#1}
+    \end{figure}
+}
+\newcommand{\land}{\wedge}
+\newcommand{\bF}{\mathbb{F}}
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+
 \title{Notebook: Distributed Computation}
 \author{Henry Blanchette}
-\date{April 2021}
+\date{Spring, 2021}
+
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
+% ---------------------------------------------------------------------------
 
 \begin{document}
 
 \maketitle
+\newpage
+\include{SecurityDefinitions}
+\include{ObliviousTransfer}
+\include{GMW}
+\include{BMR}
+\include{BGW}
+\include{ZeroKnowledgeProofs}
+\include{GMWCompiler}
+\include{Byzantine}
+\include{Efficient2PC}
 
-\section{Introduction}
+\include{Glossary}
 
 \end{document}

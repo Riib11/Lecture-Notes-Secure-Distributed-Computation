@@ -1,0 +1,30 @@
+\section{The BGW protocol for MPC}
+
+\begin{prcl}
+The idea behind \text{BGW} is to map boolean circuits to arithmetic circuits over a finite field $\bF_p$:
+\begin{align*}
+    0 &\mapsto 0 \\
+    1 &\mapsto 1 \\
+    \and &\mapsto \cdot \\
+    a \xor b &\mapsto a + b - 2 a b
+\end{align*}
+TODO
+\end{prcl}
+
+\begin{prcl}
+The \textbf{Shamir secret sharing} protocol is a $t$-out-of-$n$ secrete sharing protocol where
+\begin{itemize}
+    \item any $t$ parties can reconstruct the shared value given their shares
+    \item any set of $t-1$ parties learns no information about shared value
+\end{itemize}
+TODO: lecture 7
+\end{prcl}
+
+\begin{defn}
+Suppose we have secret sharings $[x], [y]$ and
+we want to compute $[z]$ where $z = xy$.
+Assume that parties hold secret sharings $[a], [b], [c]$,
+which are called a \textbf{Beaver triple}.
+TODO: lecture 7
+\end{defn}
+
