@@ -17,6 +17,13 @@
 \usepackage{graphicx} \graphicspath{ {images/} }
 \usepackage{xspace}
 \usepackage{environ}
+\usepackage{color}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linktoc=all,
+    linkcolor=blue
+}
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -66,7 +73,7 @@
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
 
-\title{Notebook: Distributed Computation}
+\title{Lecture Notes: Secure Distributed Computation}
 \author{Henry Blanchette}
 \date{Spring, 2021}
 
@@ -77,6 +84,7 @@
 \begin{document}
 
 \maketitle
+\tableofcontents
 \newpage
 \include{SecurityDefinitions}
 \include{ObliviousTransfer}
