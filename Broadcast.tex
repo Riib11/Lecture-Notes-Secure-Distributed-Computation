@@ -1,0 +1,110 @@
+\Section{Broadcast and Byzantine Agreement}
+
+Parties can realize a broadcast channel using a broadcast protocol.
+
+\begin{defn}
+A \textbf{broadcast protocol} is a protocol run by parties $P_1, \dots  P_n$ with designated $P^* \in \set{P_1, \dots, P_n}$ acting as a sender with initial input $m$, and must have two properties:
+\begin{itemize}
+\item \textbf{Validity.} if $P^*$ is honest, then all honest parties output $m$
+\item \textbf{Consistency.} all honest parties should output the same value
+\end{itemize}
+\putfigure{Idea of broadcast protocol}{broadcast-idea}
+\end{defn}
+
+\begin{defn}
+A \textbf{Byzantine agreement protocol} (BA) is run by parties $P_1, \dots, P_n$ where each $P_i$ has initial input $m_i$, and must have two properties:
+\begin{itemize}
+\item \textbf{Consistency.} all honest parties output the same value 
+\item \textbf{Validity.} if all honest parties hold the same input value $m$, then all honest parties output $m$
+\end{itemize}
+\end{defn}
+
+For $t < n/2$, BA $\implies$ broadcast, and broadcast $\implies$ BA.
+Additionally, BA only makes sense for $t < n/2$, whereas broadcast makes sense even for $n/2 \leq t < n$.
+
+\begin{lem}
+With no prior setup, BA/broadcast are impossible if $t \geq n/3$.
+\end{lem}
+\begin{proof}
+\putfigure{Impossibility of BA/broadcast when $t \geq n/3$}{ba-broadcast-impossible}
+\end{proof}
+
+\subsection{Phase-King Sub-Protocol for BA}
+
+The phase-king sub-protocol will be used in order to construct a BA protocol for $t < n/3$:
+\begin{enumerate}
+\item construct a phase-kind sub-protocol with designated party called ``King''
+\item run phase-king sub-protocol $t + 1$ times with $P_1, \dots, P_{t+1}$ as the successive Kings
+\end{enumerate}
+
+\begin{prcl}[phase-king]
+Designate a party $P_K$ as the ``King'' of this protocol.
+The phase-king protocol proceeds in three rounds:
+\begin{itemize}
+\item 
+every $P_i$ sends its input $v_i$ to everyone else;
+each $P_i$ sees $C_i^b = 1$ iff there are at least $n - t$ parties sent to it the bit $b$
+\item 
+each $P_i$ sends $C_i^0, C_i^1$ to everyone else;
+each $P_i$ sets $D_i^b := \set{\text{the number of parties who sent}~C^b = 1}$;
+if $D_i^1 > t$ then $v_i := 1$ else $v_i := 0$
+\item $P_K$ sends $v_K$ to all parties;
+each $P_i$ does the following: if $D_i^{v_i} < n - t$, then output $v_K$ else output $v_i$.
+\end{itemize}
+\end{prcl}
+
+\begin{lem}
+If $t < n/2$ and all honest parties begin holding input $v$, then they all output $v$
+\end{lem}
+
+\begin{lem}
+If $t < n/3$ and the Kind is honest, then all honest parties agree on their output.
+\end{lem}
+
+\begin{proof}
+TODO: lecture 14
+\end{proof}
+
+\begin{defn}
+A \textbf{public-key infrastructure} (PKI) ensures:
+\begin{itemize}
+\item every party $P_i$ has $(sk_i, pk_i)$ for a public-key signature scheme
+\item every party has the same vector $(pk_1, \dots, pk_n)$ i.e. each party knows all parties' public keys.
+\end{itemize}
+\end{defn}
+
+\begin{prcl}[Dolev-Strong]
+This is an ``\textbf{authenticated broadcast}'' protocol i.e. is secure even if all but one of the parties are corrupted.
+This protocol relies on a PKI.
+Assume $P_i$ is the sender.
+Then an \textit{$(m, i)$-valid message} is learned in round $i$, of the form
+\[
+    m, \sigma_1, \sigma_2, \dots, \sigma_i,
+\]
+by parties distinct from the receiver.
+Abbreviation:
+\[
+    m\text{-valid message}~\iff~(m, i)\text{-valid for some}~i
+\]
+The protocol proceeds in $n$ rounds:
+\begin{enumerate}
+\item 
+$P_1$ signs $m$ and sends $m, \sigma_1$ to everyone.
+\item[$2, \dots, n-1$]
+If $P_i$ received an $m$-valid message in the previous round, it appends its signature and sends an $m$-valid message in the current round.
+\item 
+Let $S_i$ denote the set of $m$ for which $P_i$ received an $m$-valid message.
+If $|S_i| = 0$ or $|S_i| > 1$, then output $1$.
+If $|S_i| = 1$, then output the value in $S_i$.
+\end{enumerate}
+\end{prcl}
+
+\begin{lem}
+The Dolev-Strong protocol is valid and consistent.
+\end{lem}
+\begin{proof}
+Validity is immediate.
+Consistency amounts to the claim that all honest parties agree on the set of $m$-valid messages. TODO: lecture 14.
+\end{proof}
+
+The Dolev-Strong protocol as described is not necessarily very efficient, but it can be modified so that it is.

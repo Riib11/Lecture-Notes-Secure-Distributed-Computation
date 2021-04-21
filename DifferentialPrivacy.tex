@@ -1,0 +1,249 @@
+\newcommand{\Lap}{\mathsf{Lap}}
+\newcommand{\score}{\mathsf{score}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\ass}[1]{\left(#1\right)}
+
+\section{Differential Privacy}
+
+\paragraph{Ideas.}
+What functionalities $\cF$ are ``safe'' to compute in the first place?
+Given a database $D$, want to answer query $q$ on $D$, giving an approximate/noisy answer $q'(D)$.
+
+\textit{Informally:} releasing $q'(D)$ is \textit{private} when the answer would be ``roughly the same'' whether or not a particular user's data was in $D$.
+
+\begin{defn}[Differential Privacy]
+Let $D = (x_1, \dots, x_n) \in X^n$ be a database, where $x_i$ is the data of user $i$.
+Databases $D,D'$ are \textbf{neighboring} if they differ in data of one user.
+Mechanism $M : X^n \to Y$ is \textbf{$\epsilon$-differentially private} when for all neighboring $D, D'$ and all $T \subset Y$,
+\[
+    \prob[M(D) \in T] \leq e^\epsilon \cdot \prob[M(D') \in T]
+\]
+$M$ is $(\epsilon, \delta)$-differentially private when for $D, D', T$ as above,
+\[
+    \prob[M(D) \in T] \leq e^\epsilon \cdot \prob[M(D') \in T] + \delta
+\]
+\textit{Note.} $\epsilon = \Omega(1/n)$, $\delta$ can be cryptographically small. So we need to look at privacy/utility trade-off.
+\end{defn}
+
+\paragraph{Composition.}
+
+If $M$ is $\epsilon$-differentially private and $D, D'$ differ in data of $k$ users, then for any $T \subset Y$:
+\[
+    \prob[M(D) \in T] \leq e^{k \epsilon} \cdot \prob[M(D') \in T]
+\]
+If $M_1, \dots, M_l$ are $\epsilon$-differentially private, then $(M_1 \times \cdots \times M_l)$ is $l \epsilon$-differentially private.
+In fact, if $l \leq 1/\epsilon^2$, then for any $\delta > 0$, 
+$(M_1 \times M_l)$is $O((l \log(1/\delta)^{1/2} \cdot \epsilon, \delta)$-differentially private.
+
+\subsection{Laplace Mechanism}
+
+\begin{defn}
+For a query $q : X^n \to \bR$, defined \textbf{global sensitivity} to be
+\[
+    GS_q := \max_{D \sim D'}|q(D) - q(D')|.
+\]
+\end{defn}
+
+Next, the idea is to answer query $q$ by returning $q(D) +$ noise, where noise depends on $GS_q$ and $\epsilon$.
+Now we need to choose a distribution.
+
+\begin{defn}
+The \textbf{Laplace distribution}, $\Lap(\sigma)$, is the distribution such that 
+\[
+    \prob[z] \propto e^{-|z|/\sigma}
+\]
+with
+mean $0$,
+standard deviation $\sigma \cdot \sqrt{2}$, and
+\[
+    \prob[\Lap(\sigma) > \sigma t] \leq e^{-t}
+\]
+\end{defn}
+
+\begin{defn}
+The \textbf{Laplace mechanism} for differential privacy answers queries $q$ with $q(D) + \Lap(GS_q/\epsilon)$.
+\end{defn}
+
+\begin{thm}
+The Laplace mechanism is differentially private.
+\end{thm}
+\begin{proof}
+TODO: lecture 17
+\end{proof}
+
+\begin{defn}
+The \textbf{exponential mechanism} for differential privacy is an abstract mechanism based on a scoring function $\score(D, y)$.
+Let $GS = \max_y \max_{D \sim D'}|\score(D, y) - \score(D', y)|$.
+Then the mechanism, on input $D$, outputs $y$ with probability proportional to $e^{\epsilon \cdot \score(D, y)/2 GS}$.
+\end{defn}
+
+\begin{lem}
+The exponential mechanism is $\epsilon$-differentially private for any scoring function.
+\end{lem}
+
+Utility for the exponential mechanism: with probability $O(1)$, the output $y$ satisfies 
+\[
+    \score(D, y) \geq 
+    \max_{y^*} \score(D, y^*) - O(GS \log|Y|/\epsilon)
+\]
+
+\subsection{Application: Synthetic Data}
+
+Given a dataset $D$ and a set of queries $Q$.
+For all $q \in Q$, $q(D) = \sum_i q(x_i)$, $D = (x_1, \dots, x_n)$,
+set 
+\[
+    \alpha := O\ass{
+        \ass{
+            \frac
+                {\log |Q| \log|X|}
+                {\epsilon n}
+        }^{1/3}
+    }
+\]
+We can use the exponential mechanism to output synthetic data $\hat{D}$ such that
+\[
+    \forall q \in Q:
+    |q(\hat{D} - q(D)| \leq O(\alpha)
+\]
+using scoring function
+\[
+    \score(D, \hat{D}) = -\max_{q \in Q}|q(D) - q(\hat{D})|
+\]
+Set $m = O(\frac{\log|Q|}{\alpha^2}$ to the number of rows in output dataset.
+This implies
+\[
+    \exists \hat{D}^*:
+    \forall q \in Q:
+    |q(\hat{D}^* - q(D)| \leq O(\alpha)
+\]
+which implies that the output $\hat{D}$ satisfies
+\begin{align*}
+    \score(D, \hat{D})
+    &\geq 
+    \score(D, \hat{D}^*) - O(\frac{1}{2} \cdot \log|X|^m) 
+    \\ &\geq
+    -O(\alpha) - O(\alpha)
+    \\ &\geq 
+    -O(\alpha)
+    \\ &\text{with high probability}
+\end{align*}
+
+\subsection{PAC Learning}
+
+Let $C$ be the class of boolean functions $C = {c : X \to \bits}$.
+For some $c \in C$, a learning algorithm is given 
+$((x_1, c(x_1), \dots, (x_n, (c(x_n)))$
+where $x_i \in X$ are sampled from unknown distribution $D$.
+Then $\cL$ should output some $c' \in C$ such that with high probability
+\[
+    \prob_{x \gets D}[c'(x) = c(x)]~\text{is high}
+\]
+Use exponential mechanism with scoring function
+\[
+    \score(\set{(x_i, y_i)}, c') =
+    -|i : c'(x_i) \neq y_i|.
+\]
+If there exists $c$ such that $\score(\set{(x_i, y_i)}, c) = 0$,
+then output $c'$ satisfies the following with high probability
+\[
+    \score(I, c') \geq -\frac{1}{\epsilon}\log(|\cC|)
+\]
+which implies that 
+\[
+    \prob_{x \gets D}[c'(x) = c(x)]~\text{is high}
+\]
+
+\subsection{Centralized versus Local Models}.
+
+\putfigure{Comparing centralized and local models of differential privacy.}{centralized-vs-local-dp}
+
+\begin{defn}
+Let $R : X \to X'$.
+Then a querying protocol is \textbf{local differentially-private} when
+\[
+    \forall x, x', T \subset X':
+    \prob[R(x) \in T] \leq e^\epsilon \cdot \prob[R(x') \in T]
+\]
+\end{defn}
+
+The local differentially-private version of the Laplace mechanism:
+\begin{align*}
+    R(x) &= x + \Lap(B/\epsilon) = x' \\
+    x_1' &= x_1 + \Lap(B/\epsilon) \\
+    &\vdots \\
+    x_n' &= x_n + \Lap(B/\epsilon) \\
+    \sum x_i' = \sum x_i + \sum_{i=1}^n \Lap(B/\epsilon)
+\end{align*}
+whereas in the centralized model the last line was 
+\[
+    \sum x_i' = \sum x_i + \Lap(B/\epsilon)
+\]
+
+TODO: what to make of last slid of lecture 18?
+
+\putfigure{(Again) centralized versus local models of differential privacy}{centralized-vs-local-dp-1}
+
+\subsection{Shuffle Model}
+
+\putfigure{Shuffled model of differential privacy}{shuffled-dp}
+
+\paragraph{Idea.} To generate a noisy histogram:
+\begin{enumerate}
+\item each party applies randomized response
+\begin{itemize}
+    \item with probability $1 - \gamma$: $x_i' = x_i$
+    \item with probability $\gamma$: $x_i' \gets \set{1, \dots, k}$
+\end{itemize}
+\item each party sends $x_i'$ to anonymous bulletin board
+\item curator gets $\set{x_i', \dots, x_n'}$ and generates history from that
+\end{enumerate}
+
+The expectation is that a $\gamma$-fraction of the parties replace their inputs by random values.
+So, consider the two cases when $P_1$ changes its inputs:
+\begin{itemize}
+\item[case 1.] $P_1$ sends uniform value in $\set{1, \dots, k}$, view it as independent of $P_1$'s input
+\item[case 2.] $P_1$ sends its input (either $x_1$ or $\hat{x}_1$);
+still a privacy benefit in shuffle model because, with some probability, other parties send $x_1/\hat{x}_1$ due to randomized response.
+\end{itemize}
+
+Fix any view of the curator --- include bit-vector indicating which parties send random values. Let $v$ denote the values sent by $P_1$ and the values sent by the parties sending random values.
+
+\putfigure{Calculations \#1 for shuffled model}{shuffled-dp-calc1}
+\putfigure{Calculations \#2 for shuffled model}{shuffled-dp-calc2}
+
+\paragraph{Application to Summation.}
+We can use this protocol to generate a histogram,
+via computing the sums of the contributed values.
+This yields noise $O(n^{1/3})$.
+
+\paragraph{Amplification result.}
+Take any $R$ that is $\epsilon_0$-local-differentially-private and run it through the shuffle mechanism.
+Then the result is $O(\min\set{\epsilon_0, 1} \cdot e^{\epsilon_0} \sqrt{\frac{\log(r/\delta)}{n}}, \delta) - DP$.
+
+\putfigure{Multi-message shuffled differential privacy model}{shuffled-dp-multimessage}
+\putfigure{Single-message shuffled differential privacy mdoel}{shuffled-dp-singlemessage}
+\putfigure{Parallel multi-message differential privacy model}{shuffled-dp-parallel-multimessage}
+
+The summation is extracted using an anonymization layer.
+We want to learn the sum exactly, without revealing parties' inputs i.e.
+\[
+    \View(\vec{x}) \approx \View(\vec{x}')
+\]
+for any $\vec{x}, \vec{x}'$ with the same sum.
+
+\begin{prcl}[shuffled summation]
+Each party $P_i$ with input $x_i$ chooses $m$ values $x_i^1, \dots, x_i^m$ uniformly subject to $\sum_j x_i^j = x_i \mod q$.
+Then sends $x_i^1, \dots, x_i^m$ to the anonymization service.
+
+The curator gets $\set{x_i^j}$ and outputs the sum.
+To achieve differential privacy, apply this protocol to $x_i +$ noise.
+The final result is 
+\[
+    \sum x_i + \sum~\text{noise}~ 
+\]
+where the noise is $O(1/\epsilon)$.
+\end{prcl}
+

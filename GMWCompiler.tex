@@ -71,35 +71,3 @@ Run $\Pi$ using the committed inputs and randomness, giving a ZK proof of correc
 \putfigure{The GMW II compiler}{gmw-ii-compiler}
 \end{prcl}
 
-\subsubsection{Broadcast}
-
-Parties can realize a broadcast channel using a broadcast protocl.
-
-\begin{defn}
-A \textbf{broadcast protocol} is a protocol run by parties $P_1, \dots  P_n$ with designated $P^* \in \set{P_1, \dots, P_n}$ acting as a sender with initial input $m$, and must have two properties:
-\begin{itemize}
-\item \textbf{Validity.} if $P^*$ is honest, then all honest parties output $m$
-\item \textbf{Consistency.} all honest parties should output the same value
-\end{itemize}
-\putfigure{Idea of broadcast protocol}{broadcast-idea}
-\end{defn}
-
-\begin{defn}
-A \textbf{Byzantine agreement protocol} (BA) is run by parties $P_1, \dots, P_n$ where each $P_i$ has initial input $m_i$, and must have two properties:
-\begin{itemize}
-\item \textbf{Consistency.} all honest parties output the same value 
-\item \textbf{Validity.} if all honest parties hold the same input value $m$, then all honest parties output $m$
-\end{itemize}
-\end{defn}
-
-For $t < n/2$, BA $\implies$ broadcast, and broadcast $\implies$ BA.
-Additionally, BA only makes sense for $t < n/2$, whereas broadcast makes sense even for $n/2 \leq t < n$.
-
-\begin{lem}
-With no prior setup, BA/broadcast are impossible if $t \geq n/3$.
-\end{lem}
-\begin{proof}
-\putfigure{Impossibility of BA/broadcast when $t \geq n/3$}{ba-broadcast-impossible}
-\end{proof}
-
-TODO: lecture 14 has rest of BA/broadcast stuff

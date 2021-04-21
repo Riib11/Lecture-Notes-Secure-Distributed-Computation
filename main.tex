@@ -33,13 +33,14 @@
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
 
+\newcommand{\cF}{\mathcal{F}}
 \newcommand{\bN}{\mathbb{N}}
 \newcommand{\bZ}{\mathbb{Z}}
 \newcommand{\bits}{\mathbb{B}}
 \newcommand{\set}[1]{\left\{#1\right\}}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\std}{\sigma}
-\newcommand{\prob}[1]{\mathsf{Pr}\left[#1\right]}
+\newcommand{\prob}{\mathsf{Pr}}
 \newcommand{\Ideal}{\mathsf{Ideal}}
 \newcommand{\Real}{\mathsf{Real}}
 \newcommand{\View}{\mathsf{View}}
@@ -59,7 +60,6 @@
         \caption{#1}
     \end{figure}
 }
-\newcommand{\land}{\wedge}
 \newcommand{\bF}{\mathbb{F}}
 
 % ---------------------------------------------------------------------------
@@ -86,7 +86,9 @@
 \include{ZeroKnowledgeProofs}
 \include{GMWCompiler}
 \include{Byzantine}
-\include{Efficient2PC}
+\include{2PC}
+\include{MCP}
+\include{DifferentialPrivacy}
 
 \include{Glossary}
 

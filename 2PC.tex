@@ -1,0 +1,41 @@
+\section{Efficient and Maliciously Secure 2PC}
+
+Ideas:
+\begin{itemize}
+\item use an OT protocol secure against malicious adversaries
+\item $P_i$ can violate correctness by garbling the wrong circuit, or swapping OT inputs
+\item the above can lead to violations of privacy
+\item selective-failure attack on privacy
+\end{itemize}
+
+\subsection{Selective-Failure Attack}
+
+\putfigure{Idea of preventing a selective-failure attack}{selective-failure-attack}
+
+\begin{prcl}[Cut-and-Choose]
+\putfigure{The cut-and-choose protocol to prevent selective-failure attacks}{cut-and-choose}
+In this protocol, $P_1$ maximizes its probability of successfully cheating if $l/4$ circuits are bad.
+So,
+\begin{align*}
+    \prob{\text{success}} 
+    &=
+    \frac{\binom{3 l / 4}{l / 2}}{\binom{l}{l / 2}}
+    \\ &=
+    \frac{(3l/4)! (l/2)!}{(l/4)! l!}
+    \\ &=
+    \frac{(l/2) \cdots (l/4 + 1)}{l \cdots (3l/4 + 1)}
+    \\ &\leq 
+    2^{-l/4}.
+\end{align*}
+Then the probability for cheating $2^{-n}$ implies $l \approx 4n$
+(can be improved to $l \approx 3n$).
+\end{prcl}
+
+The previous protocol was the \textit{circuit-level} cut-and-choose protocol. The same idea can be achieved by using garbled gates at the \textit{gate-level}, as demonstrated in the following protocol.
+
+\begin{prcl}[LEGO cut-and-choose]
+This approach uses garbled circuits and applies the cut-and-choose idea to each gate of the garbled circuit.
+\putfigure{The idea of the LEGO cut-and-choose protocol}{cut-and-choose-lego-idea}
+For security $2^{-n}$, the total garbled gates needed is $O(|c| \cdot n / \log|c|$
+TODO: more details at end of lecture 15
+\end{prcl}
