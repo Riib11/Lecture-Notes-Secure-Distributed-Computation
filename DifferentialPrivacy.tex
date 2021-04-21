@@ -175,7 +175,7 @@ The local differentially-private version of the Laplace mechanism:
     x_1' &= x_1 + \Lap(B/\epsilon) \\
     &\vdots \\
     x_n' &= x_n + \Lap(B/\epsilon) \\
-    \sum x_i' = \sum x_i + \sum_{i=1}^n \Lap(B/\epsilon)
+    \sum x_i' &= \sum x_i + \sum_{i=1}^n \Lap(B/\epsilon)
 \end{align*}
 whereas in the centralized model the last line was 
 \[
@@ -204,11 +204,10 @@ TODO: what to make of last slid of lecture 18?
 The expectation is that a $\gamma$-fraction of the parties replace their inputs by random values.
 So, consider the two cases when $P_1$ changes its inputs:
 \begin{itemize}
-\item[case 1.] $P_1$ sends uniform value in $\set{1, \dots, k}$, view it as independent of $P_1$'s input
-\item[case 2.] $P_1$ sends its input (either $x_1$ or $\hat{x}_1$);
+\item $P_1$ sends uniform value in $\set{1, \dots, k}$, view it as independent of $P_1$'s input
+\item $P_1$ sends its input (either $x_1$ or $\hat{x}_1$);
 still a privacy benefit in shuffle model because, with some probability, other parties send $x_1/\hat{x}_1$ due to randomized response.
 \end{itemize}
-
 Fix any view of the curator --- include bit-vector indicating which parties send random values. Let $v$ denote the values sent by $P_1$ and the values sent by the parties sending random values.
 
 \putfigure{Calculations \#1 for shuffled model}{shuffled-dp-calc1}
@@ -234,7 +233,7 @@ We want to learn the sum exactly, without revealing parties' inputs i.e.
 \]
 for any $\vec{x}, \vec{x}'$ with the same sum.
 
-\begin{prcl}[shuffled summation]
+\begin{prcl}[Shuffled Summation]
 Each party $P_i$ with input $x_i$ chooses $m$ values $x_i^1, \dots, x_i^m$ uniformly subject to $\sum_j x_i^j = x_i \mod q$.
 Then sends $x_i^1, \dots, x_i^m$ to the anonymization service.
 
@@ -246,4 +245,53 @@ The final result is
 \]
 where the noise is $O(1/\epsilon)$.
 \end{prcl}
+
+\begin{defn}
+A protocol $\Pi$ is \textbf{information-theoretically differentially private} if for any set of $t$ parties and any neighboring inputs $\vec{x}, \vec{x}'$ (that are equal for the $t$ corrupted parties), and any set of views $V$,
+\[
+    \prob[\View_t^\Pi(\vec{x} \in V] \leq e^\epsilon \prob[\View_t^\Pi(\vec{x}') \in V]
+\]
+\end{defn}
+
+\begin{defn}
+A protocol $\Pi$ is \textbf{computationally differentially private} if for all efficient distinguishers $D$:
+\[
+    \prob[D(\View_t^\Pi(\vec{x})) = 1] \leq 
+    e^\epsilon \prob[D(\View_t^\Pi(\vec{x}')) = 1] + \delta(n)
+\]
+\end{defn}
+
+\begin{expl}
+A computationally differentially private protocol.
+\begin{enumerate}
+\item 
+Parties set up a threshold homomorphic encryption scheme:
+\begin{itemize}
+\item have public key $pk$ and $\Enc_{pk}(x_1), \Enc_{pk}(x_2) \implies \Enc_{pk}(x_1 + x_2)$
+\item \textit{(threshold)} every party holds a share $sk_i$of secrete key $sk$
+\end{itemize}
+\item 
+Each party sets $\hat{x}_i = x_i +$ noise,
+then publishes $\Enc_{pk}(\hat{x}_i)$
+\item 
+The parties compute $\Enc_{pk}(\sum \hat{x}_i)$
+\item 
+The parties collectively decrypt to get $\sum \hat{x}_i$
+\end{enumerate}
+Note that with this method, the noise per party can stand be much lower that in the centralized differential privacy model.
+\end{expl}
+
+Some possibilities:
+\begin{itemize}
+\item use MPC to compute a differentially private functionality $\hat{F}$
+\item use an $(\epsilon, \delta)$-differentially private MPC protocol to compute $\hat{F}$
+\item use an $(\epsilon, \delta)$-differentially private MPC protocol to compute $F$.
+\end{itemize}
+
+\putfigure{TODO: lecture 20}{dp-possibilities}
+\putfigure{TODO: lecture 20}{dp-possibilities-idea}
+
+To show that this protocol is computationally differentially private in the malicious case:
+
+\putfigure{TODO: lecture 20}{dp-possibilities-idea-proof}
 

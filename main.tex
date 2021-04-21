@@ -25,49 +25,7 @@
     linkcolor=blue
 }
 
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-
-\theoremstyle{definition}
-\newtheorem{defn}{Definition}
-\newtheorem{lem}{Lemma}
-\newtheorem{expl}{Example}
-\newtheorem{thm}{Theorem}
-\newtheorem{prcl}{Protocol}
-
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-% ---------------------------------------------------------------------------
-
-\newcommand{\cF}{\mathcal{F}}
-\newcommand{\bN}{\mathbb{N}}
-\newcommand{\bZ}{\mathbb{Z}}
-\newcommand{\bits}{\mathbb{B}}
-\newcommand{\set}[1]{\left\{#1\right\}}
-\newcommand{\abs}[1]{\left|#1\right|}
-\newcommand{\std}{\sigma}
-\newcommand{\prob}{\mathsf{Pr}}
-\newcommand{\Ideal}{\mathsf{Ideal}}
-\newcommand{\Real}{\mathsf{Real}}
-\newcommand{\View}{\mathsf{View}}
-\newcommand{\Out}{\mathsf{Out}}
-\newcommand{\Hybrid}{\mathsf{Hybrid}}
-\newcommand{\OT}{\ensuremath{\mathsf{OT}}}
-\newcommand{\Gen}{\ensuremath{\mathsf{Gen}}}
-\newcommand{\Enc}{\ensuremath{\mathsf{Enc}}}
-\newcommand{\Dec}{\ensuremath{\mathsf{Dec}}}
-\newcommand{\xor}{\oplus}
-\newcommand{\Garble}{\textsf{Garble}}
-\newcommand{\Eval}{\textsf{Eval}}
-\newcommand{\putfigure}[2]{
-    \begin{figure}[!ht]
-        \centering
-        \includegraphics[width=0.8\textwidth]{#2}
-        \caption{#1}
-    \end{figure}
-}
-\newcommand{\bF}{\mathbb{F}}
+\include{commands}
 
 % ---------------------------------------------------------------------------
 % ---------------------------------------------------------------------------
@@ -83,21 +41,22 @@
 
 \begin{document}
 
-\maketitle
-\tableofcontents
-\newpage
-\include{SecurityDefinitions}
-\include{ObliviousTransfer}
-\include{GMW}
-\include{BMR}
-\include{BGW}
-\include{ZeroKnowledgeProofs}
-\include{GMWCompiler}
-\include{Byzantine}
-\include{2PC}
-\include{MCP}
-\include{DifferentialPrivacy}
+% \maketitle
+% \tableofcontents
+% \newpage
+% \include{SecurityDefinitions}
+% \include{ObliviousTransfer}
+% \include{GMW}
+% \include{BMR}
+% \include{BGW}
+% \include{ZeroKnowledgeProofs}
+% \include{GMWCompiler}
+% \include{Byzantine}
+% \include{2PC}
+% \include{MCP}
+% \include{DifferentialPrivacy}
+\include{PrivateDataCollection}
 
-\include{Glossary}
+% \include{Glossary}
 
 \end{document}
